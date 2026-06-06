@@ -1,68 +1,73 @@
-# Experiment 4 Text-to-Image Agent
+# 实验四：文生图智能体
 
-This project implements the lab-4 agent described in `基于预训练模型的文生图实践-实验4.pptx`.
+本项目实现了“基于预训练模型的文生图实践-实验4”要求的小型文生图智能体。智能体可以统一调用国产开源模型 Kolors 和国外开源模型 Microsoft Lens / Lens-Turbo，完成提示词读取、后端选择、图片生成、元数据保存和错误记录。
 
-## Files
+## 项目结构
 
-- `src/t2i_agent/`: Python package for prompt loading, backend routing, generation, and metadata records.
-- `prompts/test_prompts.jsonl`: five test prompts for Chinese scene understanding, English scene generation, attribute binding, text rendering, and stylized generation.
-- `scripts/`: batch runner (`run_all.py`) and PowerShell helpers (`run_demo.ps1` offline, `run_real.ps1` GPU models).
-- `outputs/`: generated images, metadata JSON files, and error records.
-- `reports/实验四_基于预训练模型的文生图实践报告.md`: experiment report.
-- `RUNBOOK.md`: step-by-step run guide (tests / offline demo / real models).
-- `environment.yml`: recommended conda environment.
+- `src/t2i_agent/`：智能体源码，包括提示词加载、后端路由、模型调用、图片保存和元数据记录。
+- `prompts/test_prompts.jsonl`：5 条测试提示词，覆盖中文场景、英文场景、多属性绑定、文字渲染和风格化生成。
+- `scripts/`：运行脚本，包括批量运行脚本 `run_all.py`、离线演示脚本 `run_demo.ps1` 和真实模型脚本 `run_real.ps1`。
+- `outputs/`：生成图片、同名 JSON 元数据和错误记录。
+- `reports/实验四_基于预训练模型的文生图实践报告.md`：实验报告。
+- `RUNBOOK.md`：运行手册，说明测试、离线演示和真实模型生成步骤。
+- `environment.yml`：推荐的 conda 环境配置。
 
-## Backends
+## 支持的后端
 
-- `offline`: deterministic placeholder backend (PIL only, no download/GPU). Runs the full pipeline end-to-end and writes real png+json, for verifying the agent anywhere. Image quality is not representative of a real model.
-- `kolors`: Kwai Kolors (~17GB), Chinese text-to-image.
-- `lens`: Microsoft Lens / Lens-Turbo (~29GB), English text-to-image.
+- `offline`：本地离线演示后端，只依赖 PIL，不下载模型、不需要 GPU。它会生成真实的 png+json 文件，用于验证整条流程，但图像质量不代表真实模型。
+- `kolors`：快手 Kolors，模型仓库为 `Kwai-Kolors/Kolors-diffusers`，权重约 17GB，适合中文文生图。
+- `lens`：微软 Lens / Lens-Turbo，模型仓库为 `microsoft/Lens` 或 `microsoft/Lens-Turbo`，权重约 29GB，适合英文文生图。
 
-> **Note on the `lens` backend:** the Microsoft Lens source code and the model
-> weights are **not** included in this repository (see `.gitignore`). To use the
-> `lens` backend, clone the upstream repo into `external/Lens` first:
+> 注意：本仓库不包含 Microsoft Lens 源码和大模型权重。Lens 源码需要按需克隆到 `external/Lens`：
 >
 > ```bash
 > git clone https://github.com/microsoft/Lens external/Lens
 > ```
 >
-> Model weights (`Kwai-Kolors/Kolors-diffusers`, `microsoft/Lens-Turbo`) are
-> downloaded on demand into `hf_cache/` (also git-ignored). Lens-Turbo's text
-> encoder is large, so it was run on a remote multi-GPU server rather than an
-> 8 GB laptop (see `reports/`).
+> 模型权重会按需下载到 `hf_cache/`，该目录已被 `.gitignore` 忽略。Lens-Turbo 的文本编码器体量较大，本实验中的 Lens-Turbo 图片是在远程高显存 GPU 服务器上生成的；本机 8GB 显存更适合运行 Kolors 单图冒烟测试。
 
-## Quick start (offline demo, no download)
+## 快速开始：离线演示
+
+离线演示不需要下载模型，适合先验证代码流程：
 
 ```powershell
 python scripts/run_all.py --backend offline --seed 66
-# or a single image:
+```
+
+也可以只生成一张图：
+
+```powershell
 python -m t2i_agent generate --backend offline --prompt-id cn_scene --seed 66
 ```
 
-## Environment
+生成结果会保存到 `outputs/`，每张图片都有同名 `.json` 元数据。
 
-Recommended fresh environment:
+## 环境配置
+
+推荐使用 conda 创建实验环境：
 
 ```powershell
 conda env create -f environment.yml
 conda activate t2i-lab4
 ```
 
-The current machine also has a working `pytorch2.2.2` conda environment with CUDA-enabled PyTorch, Diffusers, Transformers, Accelerate, Safetensors, and Pillow. It can run tests and may run the agent after editable install:
+当前本机也可以使用已有的 `pytorch2.2.2` 环境运行测试和 Kolors 冒烟：
 
 ```powershell
 conda run -n pytorch2.2.2 python -m pip install -e .
 ```
 
-## Unit Tests
+## 单元测试
 
 ```powershell
 conda run -n pytorch2.2.2 python -m unittest discover -s tests -v
 ```
 
-## Generation Commands
+测试内容包括提示词字段校验、后端参数解析、元数据保存、错误记录、离线后端生成和确定性检查。
 
-Use a workspace-local Hugging Face cache so downloads stay inside this lab folder:
+## 真实模型生成
+
+真实模型建议使用本项目目录内的 Hugging Face 缓存，避免权重下载到系统其他位置：
 
 ```powershell
 cmd /c subst X: "D:\数字媒体处理技术实验三"
@@ -74,23 +79,26 @@ $env:PATH="C:\Users\lenovo\anaconda3\envs\pytorch2.2.2\Library\bin;C:\Users\leno
 $python="C:\Users\lenovo\anaconda3\envs\pytorch2.2.2\python.exe"
 ```
 
-Kolors Chinese text-to-image:
+Kolors 中文单图生成：
 
 ```powershell
 & $python -X utf8 -m t2i_agent generate --backend kolors --prompt-id cn_scene --seed 66 --steps 4 --width 768 --height 768 --offload --dtype float16
 ```
 
-Lens-Turbo English text-to-image:
+Lens-Turbo 英文单图生成：
 
 ```powershell
 & $python -X utf8 -m t2i_agent generate --backend lens --variant turbo --prompt-id en_scene --seed 42 --offload
 ```
 
-The default real-model smoke path is Kolors single-image generation. Lens-Turbo is optional because it downloads about 29 GB. If VRAM is insufficient, retry with `--offload`, lower resolution, and one prompt at a time. Lens may require Hugging Face access to gated dependencies.
+默认真实模型冒烟建议先跑 Kolors 单图。Lens-Turbo 首次运行需要下载约 29GB 权重，本机 8GB 显存风险较高；如果显存不足，应开启 `--offload`、降低分辨率，并一次只跑一张图。
 
-Model-size note from Hugging Face metadata:
+## 已生成结果
 
-- `Kwai-Kolors/Kolors-diffusers`: about 17 GB.
-- `microsoft/Lens-Turbo`: about 29 GB.
+本项目已保留实验生成结果：
 
-Kolors smoke output from this workspace: `outputs/20260605-005052-kolors-default-cn_scene-seed66.png` with metadata `outputs/20260605-005052-kolors-default-cn_scene-seed66.json`.
+- Kolors：`outputs/20260605-005052-kolors-default-cn_scene-seed66.png`
+- Lens-Turbo：`outputs/20260605-115614-lens-turbo-en_scene-seed42.png` 及其他测试提示词结果
+- Offline：5 张离线流程验证图
+
+每张图片都有对应 JSON 元数据，记录模型、提示词、随机种子、采样步数、CFG、分辨率、运行时间和 offload 状态。
