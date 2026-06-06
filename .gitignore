@@ -1,0 +1,38 @@
+# ===== 模型权重 / HuggingFace 缓存（体积巨大，绝不入库）=====
+hf_cache/
+*.safetensors
+*.bin
+*.ckpt
+*.pt
+*.pth
+
+# ===== 第三方代码（微软 Lens，自行 clone，见 README）=====
+external/
+
+# ===== 课程课件 / Office 临时锁文件 =====
+*.pptx
+~$*
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyc.*
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# ===== IDE / 系统 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ===== 单元测试临时产物 =====
+tests/.tmp/
+
+# ===== 错误记录里可能含本机绝对路径（可选保留，这里先忽略）=====
+outputs/errors/

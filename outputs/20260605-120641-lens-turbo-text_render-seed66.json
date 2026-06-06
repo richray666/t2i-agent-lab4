@@ -1,0 +1,18 @@
+{
+  "backend": "lens",
+  "repo_id": "microsoft/Lens-Turbo",
+  "prompt_id": "text_render",
+  "prompt": "A poster with clear large Chinese text that says \"数字媒体实验\" in the center, blue technology texture background, clean layout.",
+  "seed": 66,
+  "steps": 4,
+  "cfg": 1.0,
+  "width": 1024,
+  "height": 1024,
+  "runtime_seconds": 103.602,
+  "offload": false,
+  "variant": "turbo",
+  "error": null,
+  "image_path": "/workspace/t2i_lens/outputs/20260605-120641-lens-turbo-text_render-seed66.png",
+  "metadata_path": "/workspace/t2i_lens/outputs/20260605-120641-lens-turbo-text_render-seed66.json",
+  "created_at": "2026-06-05T12:06:42"
+}

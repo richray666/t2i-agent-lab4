@@ -1,0 +1,18 @@
+{
+  "backend": "lens",
+  "repo_id": "microsoft/Lens-Turbo",
+  "prompt_id": "multi_attr",
+  "prompt": "On a table there are three cups: a red ceramic cup, a blue glass cup, and a yellow metal cup, with a morning kitchen in the background.",
+  "seed": 66,
+  "steps": 4,
+  "cfg": 1.0,
+  "width": 1024,
+  "height": 1024,
+  "runtime_seconds": 113.091,
+  "offload": false,
+  "variant": "turbo",
+  "error": null,
+  "image_path": "/workspace/t2i_lens/outputs/20260605-120457-lens-turbo-multi_attr-seed66.png",
+  "metadata_path": "/workspace/t2i_lens/outputs/20260605-120457-lens-turbo-multi_attr-seed66.json",
+  "created_at": "2026-06-05T12:04:58"
+}
